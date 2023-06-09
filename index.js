@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema({
   age: Number,
   height: Number,
   weight: Number,
+  bmr: Number,
 });
 
 const User = mongoose.model("User", userSchema);
@@ -66,6 +67,9 @@ app.post("/register", async (req, res) => {
       });
     }
 
+    // Menghitung BMR
+    const bmr = calculateBMR(gender, age, height, weight);
+
     const newUser = new User({
       name,
       email,
@@ -74,6 +78,7 @@ app.post("/register", async (req, res) => {
       age,
       height,
       weight,
+      bmr,
     });
 
     await newUser.save();
@@ -83,6 +88,16 @@ app.post("/register", async (req, res) => {
     res.status(500).json({ error: true, message: "Server error" });
   }
 });
+
+function calculateBMR(gender, age, height, weight) {
+  let bmr = 0;
+  if (gender === "male") {
+    bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+  } else if (gender === "female") {
+    bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+  }
+  return bmr;
+}
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
