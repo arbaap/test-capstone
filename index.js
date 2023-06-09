@@ -32,6 +32,9 @@ app.post("/register", (req, res) => {
     });
   }
 
+  // Calculate BMR
+  const bmr = calculateBMR(gender, age, height, weight);
+
   const newUser = {
     name,
     email,
@@ -40,6 +43,7 @@ app.post("/register", (req, res) => {
     age,
     height,
     weight,
+    bmr, // Store BMR value
   };
 
   users.push(newUser);
@@ -68,6 +72,18 @@ app.post("/login", (req, res) => {
 
   res.json({ error: false, message: "success", loginResult });
 });
+
+function calculateBMR(gender, age, height, weight) {
+  let bmr = 0;
+
+  if (gender === "male") {
+    bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+  } else if (gender === "female") {
+    bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+  }
+
+  return bmr;
+}
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
