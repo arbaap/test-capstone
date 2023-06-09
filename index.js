@@ -1,102 +1,75 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-
+const express = require('express');
 const app = express();
-const port = 3000;
+const bodyParser = require('body-parser');
 
-// Simulated user data storage
-const users = [];
-
-// Middleware to parse request body
+// Menggunakan body-parser untuk mengakses request body
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.get("/", (req, res) => {
-  res.send("Server is running!");
+// Data pengguna yang terdaftar
+const users = [];
+
+// Endpoint untuk memeriksa status server
+app.get('/', (req, res) => {
+  res.send('Server is running!');
 });
 
-// ...
-
-// GET endpoint to get the list of registered users
-app.get("/users", (req, res) => {
-  res.json(users);
-});
-
-// ...
 
 // Register endpoint
-app.post("/register", (req, res) => {
+app.post('/register', (req, res) => {
   const { name, email, password } = req.body;
 
-  // Check if email already exists
+  // Periksa apakah email sudah digunakan sebelumnya
   const existingUser = users.find((user) => user.email === email);
   if (existingUser) {
-    return res
-      .status(400)
-      .json({ error: true, message: "Email already exists" });
+    return res.status(400).json({ error: true, message: 'Email already exists' });
   }
 
-  // Hash the password
-  const saltRounds = 10;
-  bcrypt.hash(password, saltRounds, (err, hash) => {
-    if (err) {
-      return res
-        .status(500)
-        .json({ error: true, message: "Failed to create user" });
-    }
+  // Periksa panjang password
+  if (password.length < 8) {
+    return res.status(400).json({ error: true, message: 'Password must be at least 8 characters long' });
+  }
 
-    // Create new user object
-    const newUser = {
-      id: users.length + 1,
-      name,
-      email,
-      password: hash,
-    };
+  // Buat objek pengguna baru
+  const newUser = {
+    name,
+    email,
+    password
+  };
 
-    // Store the user
-    users.push(newUser);
+  // Tambahkan pengguna ke daftar pengguna terdaftar
+  users.push(newUser);
 
-    return res.json({ error: false, message: "User Created" });
-  });
+  res.json({ error: false, message: 'User Created' });
 });
 
 // Login endpoint
-app.post("/login", (req, res) => {
+app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
-  // Find user by email
+  // Periksa apakah pengguna dengan email tersebut ada
   const user = users.find((user) => user.email === email);
+
   if (!user) {
-    return res
-      .status(401)
-      .json({ error: true, message: "Invalid email or password" });
+    return res.status(400).json({ error: true, message: 'User not found' });
   }
 
-  // Compare password
-  bcrypt.compare(password, user.password, (err, result) => {
-    if (err || !result) {
-      return res
-        .status(401)
-        .json({ error: true, message: "Invalid email or password" });
-    }
+  // Periksa apakah password cocok
+  if (user.password !== password) {
+    return res.status(400).json({ error: true, message: 'Incorrect password' });
+  }
 
-    // Generate JWT token
-    const token = jwt.sign({ userId: user.id }, "your_secret_key");
+  // Jika berhasil login, kirim respons dengan informasi pengguna dan token
+  const loginResult = {
+    userId: `user-${Math.random().toString(36).substr(2, 9)}`,
+    name: user.name,
+    token: 'your-auth-token'
+  };
 
-    return res.json({
-      error: false,
-      message: "Success",
-      loginResult: {
-        userId: user.id,
-        name: user.name,
-        token,
-      },
-    });
-  });
+  res.json({ error: false, message: 'success', loginResult });
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+// Menjalankan server di port 3000
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
 });
