@@ -132,22 +132,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/users/:id", async (req, res) => {
-  const userId = req.params.id;
-
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: true, message: "User not found" });
-    }
-
-    // Mengembalikan data user berdasarkan ID
-    res.json({ user });
-  } catch (error) {
-    res.status(500).json({ error: true, message: "Server error" });
-  }
-});
-
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
