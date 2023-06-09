@@ -116,8 +116,13 @@ app.post("/login", async (req, res) => {
     }
 
     const loginResult = {
-      userId: `user-${Math.random().toString(36).substr(2, 9)}`,
+      userId: user._id,
       name: user.name,
+      gender: user.gender,
+      age: user.age,
+      height: user.height,
+      weight: user.weight,
+      bmr: user.bmr,
       token: "your-auth-token",
     };
 
@@ -126,6 +131,7 @@ app.post("/login", async (req, res) => {
     res.status(500).json({ error: true, message: "Server error" });
   }
 });
+
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
