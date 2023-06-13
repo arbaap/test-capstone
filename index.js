@@ -123,7 +123,6 @@ app.post("/login", async (req, res) => {
       height: user.height,
       weight: user.weight,
       bmr: user.bmr,
-      token: "your-auth-token",
     };
 
     res.json({ error: false, message: "success", loginResult });
