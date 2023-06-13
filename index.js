@@ -123,7 +123,6 @@ app.post("/login", async (req, res) => {
       height: user.height,
       weight: user.weight,
       bmr: user.bmr,
-      token: "your-auth-token",
     };
 
     res.json({ error: false, message: "success", loginResult });
@@ -134,6 +133,22 @@ app.post("/login", async (req, res) => {
 
 app.get("/users/:id", async (req, res) => {
   const userId = req.params.id;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
+
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({ error: true, message: "Server error" });
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  const userId = req.userId; // Mendapatkan userId dari permintaan (sesuai dengan implementasi Anda)
 
   try {
     const user = await User.findById(userId);
