@@ -40,30 +40,33 @@ app.get("/", (req, res) => {
   res.send("Server is running!");
 });
 
-app.get("/users", async (req, res) => {
-  try {
-    const users = await User.find();
-    res.json({ users });
-  } catch (error) {
-    res.status(500).json({ error: true, message: "Server error" });
-  }
-});
+app.get("/user", async (req, res) => {
+  const token = req.headers.authorization;
 
-app.get("/users", async (req, res) => {
   try {
-    const loggedInUserId = req.query.userId;
-    const user = await User.findById(loggedInUserId);
-    
+    // Cek keaslian token di sini
+
+    const user = await User.findOne({ token: token });
+
     if (!user) {
-      return res.status(404).json({ error: true, message: "User not found" });
+      return res.status(401).json({ error: true, message: "Unauthorized" });
     }
-    
-    res.json({ user });
+
+    const loggedInUser = {
+      userId: user._id,
+      name: user.name,
+      gender: user.gender,
+      age: user.age,
+      height: user.height,
+      weight: user.weight,
+      bmr: user.bmr,
+    };
+
+    res.json({ error: false, message: "success", loggedInUser });
   } catch (error) {
     res.status(500).json({ error: true, message: "Server error" });
   }
 });
-
 
 app.post("/register", async (req, res) => {
   const { name, email, password, gender, age, height, weight } = req.body;
@@ -131,6 +134,13 @@ app.post("/login", async (req, res) => {
         .json({ error: true, message: "Incorrect password" });
     }
 
+    // Generate token
+    const token = generateToken();
+
+    // Simpan token pada pengguna yang sedang login
+    user.token = token;
+    await user.save();
+
     const loginResult = {
       userId: user._id,
       name: user.name,
@@ -139,7 +149,7 @@ app.post("/login", async (req, res) => {
       height: user.height,
       weight: user.weight,
       bmr: user.bmr,
-      token: "your-auth-token",
+      token: token,
     };
 
     res.json({ error: false, message: "success", loginResult });
