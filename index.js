@@ -49,6 +49,22 @@ app.get("/users", async (req, res) => {
   }
 });
 
+app.get("/users", async (req, res) => {
+  try {
+    const loggedInUserId = req.query.userId;
+    const user = await User.findById(loggedInUserId);
+    
+    if (!user) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
+    
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({ error: true, message: "Server error" });
+  }
+});
+
+
 app.post("/register", async (req, res) => {
   const { name, email, password, gender, age, height, weight } = req.body;
 
