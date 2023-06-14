@@ -123,6 +123,8 @@ app.post("/login", async (req, res) => {
     const loginResult = {
       userId: user._id,
       name: user.name,
+      email: user.email,
+      password: user.password,
       gender: user.gender,
       age: user.age,
       height: user.height,
