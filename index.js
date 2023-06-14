@@ -8,7 +8,7 @@ const crypto = require("crypto");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Menghubungkan ke database MongoDB
+
 mongoose
   .connect(
     "mongodb+srv://test-capstone:testcapstone@cluster0.93sie2d.mongodb.net/testcapstone",
@@ -24,7 +24,7 @@ mongoose
     console.error("Error connecting to MongoDB:", error);
   });
 
-// Definisikan schema dan model Mongoose
+
 const userSchema = new mongoose.Schema({
   name: String,
   email: String,
@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
-// Generate secret key
+
 const jwtSecret = crypto.randomBytes(32).toString("hex");
 
 app.get("/", (req, res) => {
@@ -72,7 +72,7 @@ app.post("/register", async (req, res) => {
       });
     }
 
-    // Menghitung BMR
+  
     const bmr = calculateBMR(gender, age, height, weight);
 
     const newUser = new User({
@@ -130,7 +130,7 @@ app.post("/login", async (req, res) => {
       height: user.height,
       weight: user.weight,
       bmr: user.bmr,
-      token: jwt.sign({ userId: user._id }, jwtSecret), // Tambahkan token JWT di sini
+      token: jwt.sign({ userId: user._id }, jwtSecret), 
     };
 
     res.json({ error: false, message: "success", loginResult });
