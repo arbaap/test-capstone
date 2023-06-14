@@ -8,7 +8,6 @@ const crypto = require("crypto");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-
 mongoose
   .connect(
     "mongodb+srv://test-capstone:testcapstone@cluster0.93sie2d.mongodb.net/testcapstone",
@@ -24,7 +23,6 @@ mongoose
     console.error("Error connecting to MongoDB:", error);
   });
 
-
 const userSchema = new mongoose.Schema({
   name: String,
   email: String,
@@ -37,7 +35,6 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
-
 
 const jwtSecret = crypto.randomBytes(32).toString("hex");
 
@@ -72,7 +69,6 @@ app.post("/register", async (req, res) => {
       });
     }
 
-  
     const bmr = calculateBMR(gender, age, height, weight);
 
     const newUser = new User({
@@ -130,10 +126,29 @@ app.post("/login", async (req, res) => {
       height: user.height,
       weight: user.weight,
       bmr: user.bmr,
-      token: jwt.sign({ userId: user._id }, jwtSecret), 
+      token: jwt.sign({ userId: user._id }, jwtSecret),
     };
 
     res.json({ error: false, message: "success", loginResult });
+  } catch (error) {
+    res.status(500).json({ error: true, message: "Server error" });
+  }
+});
+
+app.post("/update-bmr", async (req, res) => {
+  const { userId, bmr } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(400).json({ error: true, message: "User not found" });
+    }
+
+    user.bmr = bmr;
+    await user.save();
+
+    res.json({ error: false, message: "BMR updated successfully" });
   } catch (error) {
     res.status(500).json({ error: true, message: "Server error" });
   }
