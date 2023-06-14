@@ -130,11 +130,10 @@ app.post("/login", async (req, res) => {
       height: user.height,
       weight: user.weight,
       bmr: user.bmr,
+      token: jwt.sign({ userId: user._id }, jwtSecret), // Tambahkan token JWT di sini
     };
 
-    const token = jwt.sign(loginResult, jwtSecret);
-
-    res.json({ error: false, message: "success", loginResult, token });
+    res.json({ error: false, message: "success", loginResult });
   } catch (error) {
     res.status(500).json({ error: true, message: "Server error" });
   }
