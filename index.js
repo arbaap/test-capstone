@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -35,6 +37,9 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
+
+// Generate secret key
+const jwtSecret = crypto.randomBytes(32).toString("hex");
 
 app.get("/", (req, res) => {
   res.send("Server is running!");
@@ -123,10 +128,11 @@ app.post("/login", async (req, res) => {
       height: user.height,
       weight: user.weight,
       bmr: user.bmr,
-      token: "your-auth-token",
     };
 
-    res.json({ error: false, message: "success", loginResult });
+    const token = jwt.sign(loginResult, jwtSecret);
+
+    res.json({ error: false, message: "success", loginResult, token });
   } catch (error) {
     res.status(500).json({ error: true, message: "Server error" });
   }
