@@ -96,9 +96,9 @@ app.post("/register", async (req, res) => {
 
 function calculateBMR(gender, age, height, weight) {
   let bmr = 0;
-  if (gender === "male") {
+  if (gender.toLowerCase() === "l") {
     bmr = 10 * weight + 6.25 * height - 5 * age + 5;
-  } else if (gender === "female") {
+  } else if (gender.toLowerCase() === "p") {
     bmr = 10 * weight + 6.25 * height - 5 * age - 161;
   }
   return bmr;
@@ -106,9 +106,9 @@ function calculateBMR(gender, age, height, weight) {
 
 function calculateBasicTarget(gender, age, height, weight) {
   let basictarget = 0;
-  if (gender === "male") {
+  if (gender.toLowerCase() === "l") {
     basictarget = 10 * weight + 6.25 * height - 5 * age + 5;
-  } else if (gender === "female") {
+  } else if (gender.toLowerCase() === "p") {
     basictarget = 10 * weight + 6.25 * height - 5 * age - 161;
   }
   return basictarget;
