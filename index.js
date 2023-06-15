@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema({
   age: Number,
   height: Number,
   weight: Number,
+  basictarget: Number,
   bmr: Number,
   calories: Number,
 });
@@ -71,6 +72,7 @@ app.post("/register", async (req, res) => {
     }
 
     const bmr = calculateBMR(gender, age, height, weight);
+    const basictarget = calculateBasicTarget(gender, age, height, weight);
 
     const newUser = new User({
       name,
@@ -80,6 +82,7 @@ app.post("/register", async (req, res) => {
       age,
       height,
       weight,
+      basictarget,
       bmr,
     });
 
@@ -99,6 +102,16 @@ function calculateBMR(gender, age, height, weight) {
     bmr = 10 * weight + 6.25 * height - 5 * age - 161;
   }
   return bmr;
+}
+
+function calculateBasicTarget(gender, age, height, weight) {
+  let basictarget = 0;
+  if (gender === "male") {
+    basictarget = 10 * weight + 6.25 * height - 5 * age + 5;
+  } else if (gender === "female") {
+    basictarget = 10 * weight + 6.25 * height - 5 * age - 161;
+  }
+  return basictarget;
 }
 
 app.post("/login", async (req, res) => {
@@ -126,6 +139,7 @@ app.post("/login", async (req, res) => {
       age: user.age,
       height: user.height,
       weight: user.weight,
+      basictarget: user.basictarget,
       bmr: user.bmr,
       calories: user.calories,
       token: jwt.sign({ userId: user._id }, jwtSecret),
