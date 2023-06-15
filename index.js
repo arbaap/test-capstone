@@ -35,6 +35,7 @@ const userSchema = new mongoose.Schema({
   calories: Number, // Tambahkan properti untuk nilai kalori
 });
 
+
 const User = mongoose.model("User", userSchema);
 
 const jwtSecret = crypto.randomBytes(32).toString("hex");
@@ -158,6 +159,10 @@ app.post("/update-bmr", async (req, res) => {
     res.status(500).json({ error: true, message: "Server error" });
   }
 });
+
+
+
+
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
