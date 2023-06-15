@@ -127,6 +127,7 @@ app.post("/login", async (req, res) => {
       height: user.height,
       weight: user.weight,
       bmr: user.bmr,
+      calories: user.calories,
       token: jwt.sign({ userId: user._id }, jwtSecret),
     };
 
