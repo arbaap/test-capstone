@@ -32,6 +32,7 @@ const userSchema = new mongoose.Schema({
   height: Number,
   weight: Number,
   bmr: Number,
+  calories: Number, // Tambahkan properti untuk nilai kalori
 });
 
 const User = mongoose.model("User", userSchema);
@@ -136,7 +137,7 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/update-bmr", async (req, res) => {
-  const { userId, bmr } = req.body;
+  const { userId, bmr, calories } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -146,9 +147,13 @@ app.post("/update-bmr", async (req, res) => {
     }
 
     user.bmr = bmr;
+    user.calories = calories; // Update nilai kalori
     await user.save();
 
-    res.json({ error: false, message: "BMR updated successfully" });
+    res.json({
+      error: false,
+      message: "BMR and calories updated successfully",
+    });
   } catch (error) {
     res.status(500).json({ error: true, message: "Server error" });
   }
