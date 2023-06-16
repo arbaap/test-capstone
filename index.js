@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema({
   basictarget: Number,
   bmr: Number,
   calories: Number,
+  token: String,
 });
 
 const User = mongoose.model("User", userSchema);
@@ -129,6 +130,11 @@ app.post("/login", async (req, res) => {
         .status(400)
         .json({ error: true, message: "Incorrect password" });
     }
+
+    const token = jwt.sign({ userId: user._id }, jwtSecret);
+
+    user.token = token;
+    await user.save();
 
     const loginResult = {
       userId: user._id,
